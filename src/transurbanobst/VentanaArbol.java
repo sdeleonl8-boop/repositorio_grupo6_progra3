@@ -258,73 +258,71 @@ public class VentanaArbol extends javax.swing.JFrame {
     // BÚSQUEDA
     // =====================================================
     private void animarBusqueda(String dpiBuscar) {
+    if (animacionEnProgreso) return;
+    animacionEnProgreso = true;
 
-        if (animacionEnProgreso) return;
+    // Resetear visualización
+    nodoEncontradoAnimado = null;
+    nodoActualAnimado = null;
+    refrescarArbol();
+    jLabel3.setText("Buscando...");
 
-        animacionEnProgreso = true;
+    new Thread(() -> {
+        // MEDICIÓN
+        long tiempoInicio = System.nanoTime(); 
+        List<Nodo> ruta = new ArrayList<>();
+        boolean encontrado = encontrarRuta(arbol.raiz, dpiBuscar, ruta);
+        long tiempoFin = System.nanoTime();
+        
+        long tiempoTotalNs = tiempoFin - tiempoInicio;
 
-        nodoEncontradoAnimado = null;
-        nodoActualAnimado = null;
+        // CICLO DE ANIMACIÓN
+        for (int i = 0; i < ruta.size(); i++) {
+            Nodo nodo = ruta.get(i);
+            nodoActualAnimado = nodo;
+            refrescarArbol();
 
-        refrescarArbol();
-
-        jLabel3.setText("Buscando...");
-
-        new Thread(() -> {
-
-            List<Nodo> ruta = new ArrayList<>();
-
-            boolean encontrado = encontrarRuta(arbol.raiz, dpiBuscar, ruta);
-
-            for (int i = 0; i < ruta.size(); i++) {
-
-                Nodo nodo = ruta.get(i);
-
-                nodoActualAnimado = nodo;
-
-                refrescarArbol();
-
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                }
-
-                if (!(encontrado && i == ruta.size() - 1)) {
-                    nodoActualAnimado = null;
-                }
+            try {
+                Thread.sleep(1000); 
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
 
-            SwingUtilities.invokeLater(() -> {
+            if (!(encontrado && i == ruta.size() - 1)) {
+                nodoActualAnimado = null;
+            }
+        }
 
-                if (encontrado) {
+        // ACTUALIZACIÓN
+        SwingUtilities.invokeLater(() -> {
+            if (encontrado) {
+                Nodo nodoFinal = ruta.get(ruta.size() - 1);
+                nodoEncontradoAnimado = nodoFinal;
 
-                    Nodo nodoFinal = ruta.get(ruta.size() - 1);
+                jLabel3.setText(
+                    "<html>DPI: " + nodoFinal.usuario.dpi
+                    + "<br>NIT: " + nodoFinal.usuario.nit
+                    + "<br>Nombre: " + nodoFinal.usuario.nombre
+                    + "<br><font color='red'><b>Tiempo: " + tiempoTotalNs + " ns</b></font></html>"
+                );
 
-                    nodoEncontradoAnimado = nodoFinal;
+                jTextField2.setText(nodoFinal.usuario.dpi);
+                jTextField3.setText(nodoFinal.usuario.nit);
+                jTextField4.setText(nodoFinal.usuario.nombre);
 
-                    // =====================================================
-                    // MOSTRAR DPI + NIT + NOMBRE COMPLETO
-                    // =====================================================
-                    jLabel3.setText(
-                            "<html>DPI: " + nodoFinal.usuario.dpi
-                            + "<br>NIT: " + nodoFinal.usuario.nit
-                            + "<br>Nombre: " + nodoFinal.usuario.nombre
-                            + "</html>"
-                    );
+            } else {
+                jLabel3.setText("<html>Usuario no encontrado.<br><b>Tiempo: " + tiempoTotalNs + " ns</b></html>");
+                
+                jTextField2.setText("");
+                jTextField3.setText("");
+                jTextField4.setText("");
+            }
 
-                } else {
-
-                    jLabel3.setText("Usuario no encontrado.");
-                }
-
-                refrescarArbol();
-
-                animacionEnProgreso = false;
-
-            });
-
-        }).start();
-    }
+            refrescarArbol();
+            animacionEnProgreso = false;
+        });
+    }).start();
+}
 
     private boolean encontrarRuta(Nodo actual, String dpi, List<Nodo> ruta) {
 
@@ -333,14 +331,12 @@ public class VentanaArbol extends javax.swing.JFrame {
         ruta.add(actual);
 
         if (actual.usuario.dpi.equals(dpi)) return true;
-
-        if (encontrarRuta(actual.izquierda, dpi, ruta)) return true;
-
-        if (encontrarRuta(actual.derecha, dpi, ruta)) return true;
-
-        ruta.remove(ruta.size() - 1);
-
-        return false;
+        // Hice este cambio para que el recorrido lo haga en base al No. de DPI
+        if (dpi.compareTo(actual.usuario.dpi) < 0) {
+            return encontrarRuta(actual.izquierda, dpi, ruta);
+        } else {
+            return encontrarRuta(actual.derecha, dpi, ruta);
+        }
     }
 
     // =====================================================
@@ -434,6 +430,11 @@ public class VentanaArbol extends javax.swing.JFrame {
         });
 
         CrearBtn.setLabel("Crear");
+        CrearBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                CrearBtnActionPerformed(evt);
+            }
+        });
 
         ActualizarBtn.setText("Actualizar");
         ActualizarBtn.addActionListener(new java.awt.event.ActionListener() {
@@ -541,6 +542,7 @@ public class VentanaArbol extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         
+        
         String dpiBuscar = jTextField1.getText();
 
         if (dpiBuscar.trim().isEmpty()) {
@@ -562,11 +564,20 @@ public class VentanaArbol extends javax.swing.JFrame {
     private void ActualizarBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ActualizarBtnActionPerformed
         // TODO add your handling code here:
         
+        long inicio = System.nanoTime();
+        
             // Obtener datos escritos
-    String dpi = jTextField2.getText();
-    String nuevoNit = jTextField3.getText();
-    String nuevoNombre = jTextField4.getText();
+    String dpi = jTextField2.getText().trim();
+    String nuevoNit = jTextField3.getText().trim();
+    String nuevoNombre = jTextField4.getText().trim();
 
+    if (dpi.isEmpty() || nuevoNombre.isEmpty()) {
+        javax.swing.JOptionPane.showMessageDialog(this, 
+                "El DPI y el Nombre son obligatorios para actualizar.", 
+                "Advertencia", 
+                javax.swing.JOptionPane.WARNING_MESSAGE);
+        return;
+    }
     // Buscar usuario en el árbol
     Usuario usuarioActualizar = arbol.buscar(dpi);
 
@@ -582,26 +593,125 @@ public class VentanaArbol extends javax.swing.JFrame {
                 this,
                 "Usuario actualizado correctamente."
         );
+    
+        jTextField2.setText("");
+        jTextField3.setText("");
+        jTextField4.setText("");
 
         // Redibujar árbol
         refrescarArbol();
 
     } else {
-
-        javax.swing.JOptionPane.showMessageDialog(
-                this,
-                "No se encontró el usuario.",
-                "Error",
-                javax.swing.JOptionPane.ERROR_MESSAGE
-        );
+        // Si el usuario intentó cambiar el DPI manualmente en la caja y no existe
+        javax.swing.JOptionPane.showMessageDialog(this, 
+                "No se pudo actualizar: El DPI no existe en el sistema.", 
+                "Error", 
+                javax.swing.JOptionPane.ERROR_MESSAGE);
     }
-        
+        long fin = System.nanoTime();
+            long total = fin - inicio;
+
+            jLabel3.setText("<html>Usuario actualizado con éxito.<br>Tiempo de inserción: " + total + " ns</html>");
+            animarCreacion();
         
     }//GEN-LAST:event_ActualizarBtnActionPerformed
 
     private void EliminarBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EliminarBtnActionPerformed
-        // TODO add your handling code here:
+        
+        long inicio = System.nanoTime();
+        
+        // Obtener el DPI
+    String dpi = jTextField2.getText().trim();
+
+    // Validación
+    if (dpi.isEmpty()) {
+        javax.swing.JOptionPane.showMessageDialog(this, 
+                "Por favor, ingrese o busque el DPI del usuario que desea eliminar.", 
+                "DPI requerido", 
+                javax.swing.JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    // Confirmación del usuario
+    int confirmacion = javax.swing.JOptionPane.showConfirmDialog(this, 
+            "¿Está seguro de que desea eliminar al usuario con DPI: " + dpi + "?", 
+            "Confirmar eliminación", 
+            javax.swing.JOptionPane.YES_NO_OPTION);
+    
+    if (confirmacion == javax.swing.JOptionPane.YES_OPTION) {
+        
+        // El método eliminar
+        if (arbol.buscar(dpi) != null) {
+            arbol.eliminar(dpi);
+            
+            // Limpiar la interfaz
+            jTextField2.setText("");
+            jTextField3.setText("");
+            jTextField4.setText("");
+            jLabel3.setText("Usuario eliminado correctamente.");
+
+            animarCreacion(); 
+            
+            javax.swing.JOptionPane.showMessageDialog(this, "Usuario eliminado del sistema.");
+        } else {
+            javax.swing.JOptionPane.showMessageDialog(this, 
+                    "El usuario no existe.", 
+                    "Error", 
+                    javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+    }
+        long fin = System.nanoTime();
+            long total = fin - inicio;
+
+            jLabel3.setText("<html>Usuario eliminado con éxito.<br>Tiempo de inserción: " + total + " ns</html>");
+            animarCreacion();
     }//GEN-LAST:event_EliminarBtnActionPerformed
+
+    private void CrearBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CrearBtnActionPerformed
+        
+        long inicio = System.nanoTime();
+        
+    String dpi = jTextField2.getText().trim();
+    String nit = jTextField3.getText().trim();
+    String nombre = jTextField4.getText().trim();
+
+    if (dpi.isEmpty() || nombre.isEmpty()) {
+        javax.swing.JOptionPane.showMessageDialog(this, 
+                "Por favor, complete el DPI y el Nombre del usuario.", 
+                "Campos Incompletos", 
+                javax.swing.JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    Usuario nuevoUsuario = new Usuario(dpi, nit, nombre);
+    
+    if (arbol.buscar(dpi) != null) {
+        javax.swing.JOptionPane.showMessageDialog(this, 
+                "El usuario con DPI " + dpi + " ya existe en el sistema.", 
+                "Error de Duplicado", 
+                javax.swing.JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    // Insertar
+    arbol.insertar(nuevoUsuario);
+
+    long fin = System.nanoTime();
+    long total = fin - inicio;
+
+    jLabel3.setText("<html>Usuario creado con éxito.<br>Tiempo de inserción: " + total + " ns</html>");
+    animarCreacion();
+    
+    jTextField2.setText("");
+    jTextField3.setText("");
+    jTextField4.setText("");
+    jTextField2.requestFocus(); 
+    
+    // Animar el grafico
+    animarCreacion();
+
+    System.out.println("Nodo insertado: " + dpi);
+    }//GEN-LAST:event_CrearBtnActionPerformed
 
     /**
      * @param args the command line arguments

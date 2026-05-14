@@ -87,4 +87,56 @@ class ArbolBinarioBusqueda {
             inOrden(nodo.derecha);
         }
     }
+    
+    public void eliminar(String dpi) {
+        raiz = eliminarRecursivo(raiz, dpi);
+    }
+
+    /**
+     * Lógica recursiva para encontrar y eliminar el nodo.
+     */
+    private Nodo eliminarRecursivo(Nodo actual, String dpi) {
+        if (actual == null) {
+            return null; // El DPI no existe en el árbol
+        }
+
+        // 1. Navegar el árbol comparando el DPI
+        if (dpi.compareTo(actual.usuario.dpi) < 0) {
+            actual.izquierda = eliminarRecursivo(actual.izquierda, dpi);
+        } else if (dpi.compareTo(actual.usuario.dpi) > 0) {
+            actual.derecha = eliminarRecursivo(actual.derecha, dpi);
+        } else {
+            // ¡Nodo encontrado! Aplicar reglas de eliminación de BST
+
+            // Caso A: El nodo no tiene hijos o solo tiene uno (Derecho)
+            if (actual.izquierda == null) {
+                return actual.derecha;
+            } 
+            // Caso B: El nodo solo tiene un hijo (Izquierdo)
+            else if (actual.derecha == null) {
+                return actual.izquierda;
+            }
+
+            // Caso C: El nodo tiene DOS hijos
+            // Buscamos el sucesor inmediato (el nodo más pequeño en el subárbol derecho)
+            actual.usuario = encontrarMinimo(actual.derecha);
+
+            // Eliminamos el sucesor en el subárbol derecho
+            actual.derecha = eliminarRecursivo(actual.derecha, actual.usuario.dpi);
+        }
+
+        return actual;
+    }
+
+    /**
+     * Auxiliar para encontrar el nodo con el valor mínimo (el sucesor).
+     */
+    private Usuario encontrarMinimo(Nodo nodo) {
+        Usuario min = nodo.usuario;
+        while (nodo.izquierda != null) {
+            min = nodo.izquierda.usuario;
+            nodo = nodo.izquierda;
+        }
+        return min;
+    }
 }
