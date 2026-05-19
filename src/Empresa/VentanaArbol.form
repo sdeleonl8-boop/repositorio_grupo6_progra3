@@ -175,7 +175,7 @@
     </Container>
     <Component class="javax.swing.JLabel" name="jLabel2">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Seleccionar usuario por DPI"/>
+        <Property name="text" type="java.lang.String" value="Seleccionar empleado por CDE"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="jTextField1">
@@ -198,7 +198,7 @@
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel1">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Mantenimiento Usuario"/>
+        <Property name="text" type="java.lang.String" value="Mantenimiento Empleado"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel6">
@@ -208,12 +208,12 @@
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel4">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Ingrese DPI:"/>
+        <Property name="text" type="java.lang.String" value="Ingrese CDE:"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel5">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Ingrese NIT:"/>
+        <Property name="text" type="java.lang.String" value="Ingrese puesto:"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="jTextField4">

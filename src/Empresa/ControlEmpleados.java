@@ -1,4 +1,4 @@
-package transurbanobst;
+package Empresa;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.util.Scanner;
 
 
-public class TransurbanoBST {
+public class ControlEmpleados {
 
     public static void main(String[] args) {
         
@@ -43,11 +43,11 @@ public class TransurbanoBST {
 
                 if (datos.length == 3) {
 
-                    String dpi = datos[0].trim();
-                    String nit = datos[1].trim();
+                    String CDE = datos[0].trim();
+                    String puesto = datos[1].trim();
                     String nombre = datos[2].trim();
 
-                    Usuario usuario = new Usuario(dpi, nit, nombre);
+                    Usuario usuario = new Usuario(CDE, puesto, nombre);
 
                     arbol.insertar(usuario);
                 }

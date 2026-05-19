@@ -1,4 +1,4 @@
-package transurbanobst;
+package Empresa;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -113,9 +113,6 @@ public class VentanaArbol extends javax.swing.JFrame {
         super.paint(g);
     }
 
-    // =====================================================
-    // ÁRBOL MÁS COMPACTO
-    // =====================================================
     private void dibujarArbol(Graphics g, Nodo nodo, int x, int y, int separacion) {
 
         if (nodo == null || !nodosVisibles.contains(nodo)) return;
@@ -152,15 +149,15 @@ public class VentanaArbol extends javax.swing.JFrame {
         g2.drawRoundRect(rectX, rectY, ancho, alto, 12, 12);
 
         // =====================================================
-        // MOSTRAR DPI + NIT + NOMBRE COMPLETO
+        // MOSTRAR CDE + puesto + NOMBRE COMPLETO
         // =====================================================
         g2.setColor(Color.WHITE);
 
         g2.setFont(new Font("Segoe UI", Font.BOLD, 9));
-        g2.drawString("DPI: " + nodo.usuario.dpi, rectX + 6, rectY + 14);
+        g2.drawString("CDE: " + nodo.usuario.CDE, rectX + 6, rectY + 14);
 
         g2.setFont(new Font("Segoe UI", Font.PLAIN, 8));
-        g2.drawString("NIT: " + nodo.usuario.nit, rectX + 6, rectY + 27);
+        g2.drawString("Puesto: " + nodo.usuario.puesto, rectX + 6, rectY + 27);
 
         g2.setFont(new Font("Segoe UI", Font.PLAIN, 8));
         g2.drawString(nodo.usuario.nombre, rectX + 6, rectY + 40);
@@ -257,7 +254,7 @@ public class VentanaArbol extends javax.swing.JFrame {
     // =====================================================
     // BÚSQUEDA
     // =====================================================
-    private void animarBusqueda(String dpiBuscar) {
+    private void animarBusqueda(String CDEBuscar) {
     if (animacionEnProgreso) return;
     animacionEnProgreso = true;
 
@@ -271,7 +268,7 @@ public class VentanaArbol extends javax.swing.JFrame {
         // MEDICIÓN
         long tiempoInicio = System.nanoTime(); 
         List<Nodo> ruta = new ArrayList<>();
-        boolean encontrado = encontrarRuta(arbol.raiz, dpiBuscar, ruta);
+        boolean encontrado = encontrarRuta(arbol.raiz, CDEBuscar, ruta);
         long tiempoFin = System.nanoTime();
         
         long tiempoTotalNs = tiempoFin - tiempoInicio;
@@ -300,14 +297,14 @@ public class VentanaArbol extends javax.swing.JFrame {
                 nodoEncontradoAnimado = nodoFinal;
 
                 jLabel3.setText(
-                    "<html>DPI: " + nodoFinal.usuario.dpi
-                    + "<br>NIT: " + nodoFinal.usuario.nit
+                    "<html>CDE: " + nodoFinal.usuario.CDE
+                    + "<br>Puesto: " + nodoFinal.usuario.puesto
                     + "<br>Nombre: " + nodoFinal.usuario.nombre
                     + "<br><font color='red'><b>Tiempo: " + tiempoTotalNs + " ns</b></font></html>"
                 );
 
-                jTextField2.setText(nodoFinal.usuario.dpi);
-                jTextField3.setText(nodoFinal.usuario.nit);
+                jTextField2.setText(nodoFinal.usuario.CDE);
+                jTextField3.setText(nodoFinal.usuario.puesto);
                 jTextField4.setText(nodoFinal.usuario.nombre);
 
             } else {
@@ -324,18 +321,18 @@ public class VentanaArbol extends javax.swing.JFrame {
     }).start();
 }
 
-    private boolean encontrarRuta(Nodo actual, String dpi, List<Nodo> ruta) {
+    private boolean encontrarRuta(Nodo actual, String CDE, List<Nodo> ruta) {
 
         if (actual == null) return false;
 
         ruta.add(actual);
 
-        if (actual.usuario.dpi.equals(dpi)) return true;
-        // Hice este cambio para que el recorrido lo haga en base al No. de DPI
-        if (dpi.compareTo(actual.usuario.dpi) < 0) {
-            return encontrarRuta(actual.izquierda, dpi, ruta);
+        if (actual.usuario.CDE.equals(CDE)) return true;
+        // Hice este cambio para que el recorrido lo haga en base al No. de CDE
+        if (CDE.compareTo(actual.usuario.CDE) < 0) {
+            return encontrarRuta(actual.izquierda, CDE, ruta);
         } else {
-            return encontrarRuta(actual.derecha, dpi, ruta);
+            return encontrarRuta(actual.derecha, CDE, ruta);
         }
     }
 
@@ -398,7 +395,7 @@ public class VentanaArbol extends javax.swing.JFrame {
 
         jScrollPane4.setViewportView(panelDibujo);
 
-        jLabel2.setText("Seleccionar usuario por DPI");
+        jLabel2.setText("Seleccionar empleado por CDE");
 
         jTextField1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -415,13 +412,13 @@ public class VentanaArbol extends javax.swing.JFrame {
 
         jLabel3.setText("====================================================");
 
-        jLabel1.setText("Mantenimiento Usuario");
+        jLabel1.setText("Mantenimiento Empleado");
 
         jLabel6.setText("Ingrese Nombre:");
 
-        jLabel4.setText("Ingrese DPI:");
+        jLabel4.setText("Ingrese CDE:");
 
-        jLabel5.setText("Ingrese NIT:");
+        jLabel5.setText("Ingrese puesto:");
 
         jTextField4.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -540,14 +537,14 @@ public class VentanaArbol extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         
         
-        String dpiBuscar = jTextField1.getText();
+        String CDEBuscar = jTextField1.getText();
 
-        if (dpiBuscar.trim().isEmpty()) {
+        if (CDEBuscar.trim().isEmpty()) {
             return;
         }
 
         // Llamamos al método que creamos con el hilo (Thread) y el delay de 1000ms
-        animarBusqueda(dpiBuscar);
+        animarBusqueda(CDEBuscar);
     
             
         
@@ -564,25 +561,25 @@ public class VentanaArbol extends javax.swing.JFrame {
         long inicio = System.nanoTime();
         
             // Obtener datos escritos
-    String dpi = jTextField2.getText().trim();
-    String nuevoNit = jTextField3.getText().trim();
+    String CDE = jTextField2.getText().trim();
+    String nuevoPuesto = jTextField3.getText().trim();
     String nuevoNombre = jTextField4.getText().trim();
 
-    if (dpi.isEmpty() || nuevoNombre.isEmpty()) {
+    if (CDE.isEmpty() || nuevoNombre.isEmpty()) {
         javax.swing.JOptionPane.showMessageDialog(this, 
-                "El DPI y el Nombre son obligatorios para actualizar.", 
+                "El CDE y el Nombre son obligatorios para actualizar.", 
                 "Advertencia", 
                 javax.swing.JOptionPane.WARNING_MESSAGE);
         return;
     }
     // Buscar usuario en el árbol
-    Usuario usuarioActualizar = arbol.buscar(dpi);
+    Usuario usuarioActualizar = arbol.buscar(CDE);
 
     // Verificar si existe
     if (usuarioActualizar != null) {
 
         // Actualizar datos
-        usuarioActualizar.nit = nuevoNit;
+        usuarioActualizar.puesto = nuevoPuesto;
         usuarioActualizar.nombre = nuevoNombre;
 
         // Mensaje
@@ -599,9 +596,9 @@ public class VentanaArbol extends javax.swing.JFrame {
         refrescarArbol();
 
     } else {
-        // Si el usuario intentó cambiar el DPI manualmente en la caja y no existe
+        // Si el usuario intentó cambiar el CDE manualmente en la caja y no existe
         javax.swing.JOptionPane.showMessageDialog(this, 
-                "No se pudo actualizar: El DPI no existe en el sistema.", 
+                "No se pudo actualizar: El CDE no existe en el sistema.", 
                 "Error", 
                 javax.swing.JOptionPane.ERROR_MESSAGE);
     }
@@ -617,29 +614,29 @@ public class VentanaArbol extends javax.swing.JFrame {
         
         long inicio = System.nanoTime();
         
-        // Obtener el DPI
-    String dpi = jTextField2.getText().trim();
+        // Obtener el CDE
+    String CDE = jTextField2.getText().trim();
 
     // Validación
-    if (dpi.isEmpty()) {
+    if (CDE.isEmpty()) {
         javax.swing.JOptionPane.showMessageDialog(this, 
-                "Por favor, ingrese o busque el DPI del usuario que desea eliminar.", 
-                "DPI requerido", 
+                "Por favor, ingrese o busque el CDE del usuario que desea eliminar.", 
+                "CDE requerido", 
                 javax.swing.JOptionPane.WARNING_MESSAGE);
         return;
     }
 
     // Confirmación del usuario
     int confirmacion = javax.swing.JOptionPane.showConfirmDialog(this, 
-            "¿Está seguro de que desea eliminar al usuario con DPI: " + dpi + "?", 
+            "¿Está seguro de que desea eliminar al usuario con CDE: " + CDE + "?", 
             "Confirmar eliminación", 
             javax.swing.JOptionPane.YES_NO_OPTION);
     
     if (confirmacion == javax.swing.JOptionPane.YES_OPTION) {
         
         // El método eliminar
-        if (arbol.buscar(dpi) != null) {
-            arbol.eliminar(dpi);
+        if (arbol.buscar(CDE) != null) {
+            arbol.eliminar(CDE);
             
             // Limpiar la interfaz
             jTextField2.setText("");
@@ -668,23 +665,23 @@ public class VentanaArbol extends javax.swing.JFrame {
         
         long inicio = System.nanoTime();
         
-    String dpi = jTextField2.getText().trim();
+    String CDE = jTextField2.getText().trim();
     String nit = jTextField3.getText().trim();
     String nombre = jTextField4.getText().trim();
 
-    if (dpi.isEmpty() || nombre.isEmpty()) {
+    if (CDE.isEmpty() || nombre.isEmpty()) {
         javax.swing.JOptionPane.showMessageDialog(this, 
-                "Por favor, complete el DPI y el Nombre del usuario.", 
+                "Por favor, complete el CDE y el Nombre del usuario.", 
                 "Campos Incompletos", 
                 javax.swing.JOptionPane.WARNING_MESSAGE);
         return;
     }
 
-    Usuario nuevoUsuario = new Usuario(dpi, nit, nombre);
+    Usuario nuevoUsuario = new Usuario(CDE, nit, nombre);
     
-    if (arbol.buscar(dpi) != null) {
+    if (arbol.buscar(CDE) != null) {
         javax.swing.JOptionPane.showMessageDialog(this, 
-                "El usuario con DPI " + dpi + " ya existe en el sistema.", 
+                "El usuario con CDE " + CDE + " ya existe en el sistema.", 
                 "Error de Duplicado", 
                 javax.swing.JOptionPane.ERROR_MESSAGE);
         return;
@@ -707,7 +704,7 @@ public class VentanaArbol extends javax.swing.JFrame {
     // Animar el grafico
     animarCreacion();
 
-    System.out.println("Nodo insertado: " + dpi);
+    System.out.println("Nodo insertado: " + CDE);
     }//GEN-LAST:event_CrearBtnActionPerformed
 
     /**

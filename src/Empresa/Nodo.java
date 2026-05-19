@@ -1,4 +1,4 @@
-package transurbanobst;
+package Empresa;
 
 class Nodo {
     Usuario usuario;

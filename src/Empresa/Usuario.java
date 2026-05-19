@@ -1,21 +1,21 @@
-package transurbanobst;
+package Empresa;
 
 
 class Usuario {
-    String dpi;
-    String nit;
+    String CDE;
+    String puesto;
     String nombre;
 
-    public Usuario(String dpi, String nit, String nombre) {
-        this.dpi = dpi;
-        this.nit = nit;
+    public Usuario(String CDE, String puesto, String nombre) {
+        this.CDE = CDE;
+        this.puesto = puesto;
         this.nombre = nombre;
     }
 
     @Override
     public String toString() {
-        return "DPI: " + dpi +
-               "\nNIT: " + nit +
+        return "CDE: " + CDE +
+               "\npuesto: " + puesto +
                "\nNombre: " + nombre;
     }
 }
@@ -36,19 +36,20 @@ class ArbolBinarioBusqueda {
             return new Nodo(usuario);
         }
 
-        // Comparar DPI
-        if (usuario.dpi.compareTo(actual.usuario.dpi) < 0) {
+        // Comparar CDE
+        if (usuario.CDE.compareTo(actual.usuario.CDE) < 0) {
             actual.izquierda = insertarRecursivo(actual.izquierda, usuario);
-        } else if (usuario.dpi.compareTo(actual.usuario.dpi) > 0) {
+        } else if (usuario.CDE.compareTo(actual.usuario.CDE) > 0) {
             actual.derecha = insertarRecursivo(actual.derecha, usuario);
         }
 
         return actual;
     }
 
-    // Buscar por DPI
-    public Usuario buscar(String dpi) {
-        Nodo resultado = buscarRecursivo(raiz, dpi);
+    // Buscar por CDE
+    public Usuario buscar(String CDE) {
+        Nodo resultado = buscarRecursivo(raiz, CDE
+        );
 
         if (resultado != null) {
             return resultado.usuario;
@@ -57,20 +58,20 @@ class ArbolBinarioBusqueda {
         return null;
     }
 
-    private Nodo buscarRecursivo(Nodo actual, String dpi) {
+    private Nodo buscarRecursivo(Nodo actual, String CDE) {
 
         if (actual == null) {
             return null;
         }
 
-        if (dpi.equals(actual.usuario.dpi)) {
+        if (CDE.equals(actual.usuario.CDE)) {
             return actual;
         }
 
-        if (dpi.compareTo(actual.usuario.dpi) < 0) {
-            return buscarRecursivo(actual.izquierda, dpi);
+        if (CDE.compareTo(actual.usuario.CDE) < 0) {
+            return buscarRecursivo(actual.izquierda, CDE);
         } else {
-            return buscarRecursivo(actual.derecha, dpi);
+            return buscarRecursivo(actual.derecha, CDE);
         }
     }
 
@@ -88,23 +89,23 @@ class ArbolBinarioBusqueda {
         }
     }
     
-    public void eliminar(String dpi) {
-        raiz = eliminarRecursivo(raiz, dpi);
+    public void eliminar(String CDE) {
+        raiz = eliminarRecursivo(raiz, CDE);
     }
 
     /**
      * Lógica recursiva para encontrar y eliminar el nodo.
      */
-    private Nodo eliminarRecursivo(Nodo actual, String dpi) {
+    private Nodo eliminarRecursivo(Nodo actual, String CDE) {
         if (actual == null) {
-            return null; // El DPI no existe en el árbol
+            return null; // El CDE no existe en el árbol
         }
 
-        // 1. Navegar el árbol comparando el DPI
-        if (dpi.compareTo(actual.usuario.dpi) < 0) {
-            actual.izquierda = eliminarRecursivo(actual.izquierda, dpi);
-        } else if (dpi.compareTo(actual.usuario.dpi) > 0) {
-            actual.derecha = eliminarRecursivo(actual.derecha, dpi);
+        // 1. Navegar el árbol comparando el CDE
+        if (CDE.compareTo(actual.usuario.CDE) < 0) {
+            actual.izquierda = eliminarRecursivo(actual.izquierda, CDE);
+        } else if (CDE.compareTo(actual.usuario.CDE) > 0) {
+            actual.derecha = eliminarRecursivo(actual.derecha, CDE);
         } else {
             // ¡Nodo encontrado! Aplicar reglas de eliminación de BST
 
@@ -122,7 +123,7 @@ class ArbolBinarioBusqueda {
             actual.usuario = encontrarMinimo(actual.derecha);
 
             // Eliminamos el sucesor en el subárbol derecho
-            actual.derecha = eliminarRecursivo(actual.derecha, actual.usuario.dpi);
+            actual.derecha = eliminarRecursivo(actual.derecha, actual.usuario.CDE);
         }
 
         return actual;
